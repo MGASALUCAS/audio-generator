@@ -1,0 +1,146 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Welcome Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .content {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Welcome to Our Website!</h1>
+        <p>This website offers great insights into our services and solutions.</p>
+        <p>Feel free to explore!</p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check if it's the user's first visit
+            if (!localStorage.getItem('visited')) {
+                // If not visited, initiate speech synthesis
+                localStorage.setItem('visited', 'true');
+
+                // Fetch welcome text from Flask API (this should be the actual URL where the Flask API is running)
+                fetch('http://127.0.0.1:5000/api/get-welcome-text')  // Use the correct address of your Flask API
+                    .then(response => response.json())
+                    .then(data => {
+                        const welcomeText = data.welcome_text;
+                        speakText(welcomeText);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching welcome text:', error);
+                    });
+
+                // Function to speak out the text
+                function speakText(text) {
+                    if ('speechSynthesis' in window) {
+                        const speech = new SpeechSynthesisUtterance(text);
+                        speech.lang = 'en-US'; // You can change the language if necessary
+                        speech.rate = 1; // Control the speed of speech
+                        speech.pitch = 1; // Control the pitch of the voice
+
+                        // Ensure that the voices are loaded
+                        window.speechSynthesis.onvoiceschanged = function() {
+                            window.speechSynthesis.speak(speech);
+                        };
+                    } else {
+                        console.log("Speech synthesis not supported in this browser.");
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Reception</title>
+
+    <!-- Include FontAwesome for the play icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        #playButton {
+            font-size: 50px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #007bff;
+        }
+        #playButton:hover {
+            color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>University of Dar es Salaam ICT Reception</h1>
+<p>Welcome to our virtual assistant. Click the icon to hear the welcome message.</p>
+
+<!-- Audio element (hidden) -->
+<audio id="welcomeAudio" class="hidden"></audio>
+
+<!-- Play button with the play icon -->
+<button id="playButton">
+    <i class="fas fa-play-circle"></i> <!-- FontAwesome play icon -->
+</button>
+
+<script>
+    window.onload = function() {
+        // Fetch the welcome message audio when the page loads
+        fetch('http://10.131.179.59:5000/api/welcome-audio')
+        .then(response => response.json())
+        .then(data => {
+            if (data.audio_file) {
+                var audio = document.getElementById('welcomeAudio');
+                var playButton = document.getElementById('playButton');
+
+                // Assign the audio file to the audio element
+                audio.src = data.audio_file;
+
+                // Add event listener to play audio when button is clicked
+                playButton.addEventListener('click', function() {
+                    // Ensure the audio is loaded before playing
+                    audio.play().then(() => {
+                        console.log("Audio is playing");
+                    }).catch(error => {
+                        console.error("Error playing audio:", error);
+                    });
+                });
+
+            } else {
+                console.error("No audio file returned from API");
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching audio file:', error);
+        });
+    };
+</script>
+
+</body>
+</html>
+
